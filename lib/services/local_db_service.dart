@@ -6,7 +6,6 @@ import 'package:path_provider/path_provider.dart';
 
 import '../constants/constant.dart';
 import '../constants/local_db_constant.dart';
-import '../model/activity_model.dart';
 import 'locator_service.dart';
 
 class LocalDBService {
@@ -107,39 +106,39 @@ class LocalDBService {
   }
 
   // Updated method to store list of ActivityModel objects
-  Future<void> setHistory(List<ActivityModel>? activities) async {
-    if (activities == null) {
-      await Hive.box(ConstantValue.dbName).delete(DBConstant.KEY_LIST);
-      return;
-    }
+  // Future<void> setHistory(List<ActivityModel>? activities) async {
+  //   if (activities == null) {
+  //     await Hive.box(ConstantValue.dbName).delete(DBConstant.KEY_LIST);
+  //     return;
+  //   }
 
-    // Convert the list to a list of JSON maps
-    final List<String> jsonStringList =
-        activities.map((activity) => json.encode(activity.toJson())).toList();
+  //   // Convert the list to a list of JSON maps
+  //   final List<String> jsonStringList =
+  //       activities.map((activity) => json.encode(activity.toJson())).toList();
 
-    // Store the JSON string list
-    await Hive.box(ConstantValue.dbName)
-        .put(DBConstant.KEY_LIST, jsonStringList);
-  }
+  //   // Store the JSON string list
+  //   await Hive.box(ConstantValue.dbName)
+  //       .put(DBConstant.KEY_LIST, jsonStringList);
+  // }
 
   // Updated method to retrieve list of ActivityModel objects
-  List<ActivityModel>? getHistory() {
-    final List<dynamic>? jsonStringList =
-        Hive.box(ConstantValue.dbName).get(DBConstant.KEY_LIST);
+  // List<ActivityModel>? getHistory() {
+  //   final List<dynamic>? jsonStringList =
+  //       Hive.box(ConstantValue.dbName).get(DBConstant.KEY_LIST);
 
-    if (jsonStringList == null) return null;
+  //   if (jsonStringList == null) return null;
 
-    try {
-      // Convert the JSON string list back to ActivityModel objects
-      return jsonStringList.map<ActivityModel>((jsonString) {
-        final Map<String, dynamic> jsonMap = json.decode(jsonString);
-        return ActivityModel.fromJson(jsonMap);
-      }).toList();
-    } catch (e) {
-      log('Error parsing activity history: $e');
-      return null;
-    }
-  }
+  //   try {
+  //     // Convert the JSON string list back to ActivityModel objects
+  //     return jsonStringList.map<ActivityModel>((jsonString) {
+  //       final Map<String, dynamic> jsonMap = json.decode(jsonString);
+  //       return ActivityModel.fromJson(jsonMap);
+  //     }).toList();
+  //   } catch (e) {
+  //     log('Error parsing activity history: $e');
+  //     return null;
+  //   }
+  // }
 
   Future<void> setSelectedTypes(String types) async {
     if (types.isEmpty) {

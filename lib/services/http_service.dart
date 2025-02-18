@@ -27,17 +27,11 @@ class APIService {
     dio.interceptors.add(
       InterceptorsWrapper(
         onError: (DioException error, ErrorInterceptorHandler handler) async {
-          if (error.response?.statusCode == 401) {
-            await fetchRefreshToken().then((void e) async {
-              return handler.resolve(await retry(error.requestOptions));
-            });
-          } else {
-            snackBarFailed(
-                content: CustomException(
-                        handleError(error), error.response!.statusCode!)
-                    .toString());
-            handler.reject(error);
-          }
+          snackBarFailed(
+              content: CustomException(
+                      handleError(error), error.response!.statusCode!)
+                  .toString());
+          handler.reject(error);
         },
       ),
     );
@@ -54,28 +48,6 @@ class APIService {
       queryParameters: requestOptions.queryParameters,
       options: options,
     );
-  }
-
-  Future<void> fetchRefreshToken() async {
-    final String accessToken = LocalDBService().getRefreshToken();
-    final String basicAuth = '';
-    // 'Basic ${base64.encode(utf8.encode('$clientId:$clientSecret'))}';
-    final Response response = await APIService.instance.post(
-      <String, String>{
-        'grant_type': 'refresh_token',
-        'refresh_token': accessToken,
-      },
-      fullUrl: 'https://oauth-beta-01.tetralogiq.com/api/0.1/oauth/token',
-      header: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'authorization': basicAuth,
-      },
-    );
-    final String token = response.data['access_token'];
-    final String refreshToken = response.data['refresh_token'];
-    await LocalDBService.instance.setToken(token);
-    await LocalDBService.instance.setRefreshToken(refreshToken);
   }
 
   Future<Response> get(Object? body,

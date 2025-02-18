@@ -1,7 +1,8 @@
 import 'package:get_it/get_it.dart';
 
 import '../provider/activity_provider.dart';
-import '../repositories/activity_repo.dart';
+import '../provider/stock_provider.dart';
+import '../repositories/stock_repository.dart';
 import 'http_service.dart';
 import 'local_db_service.dart';
 import 'navigation_service.dart';
@@ -20,7 +21,7 @@ Future<void> initLocator() async {
       return localDBService;
     })
     ..registerLazySingleton<APIService>(APIService.new)
-    ..registerLazySingleton<ActivityRepository>(ActivityRepository.new)
+    ..registerLazySingleton<StockRepository>(StockRepository.new)
     // ..registerLazySingleton<LoginRepository>(LoginRepository.new)
     // ..registerLazySingleton<AccountRepository>(AccountRepository.new)
     // ..registerLazySingleton<ForexLoungeRepository>(ForexLoungeRepository.new)
@@ -31,8 +32,8 @@ Future<void> initLocator() async {
     //     () => LocalizationService(navigationService: locator()))
 
     /// Page Dependencies
-    ..registerFactory<ActivityProvider>(() => ActivityProvider());
-  // ..registerFactory<MainProvider>(() => MainProvider())
+    ..registerFactory<ActivityProvider>(() => ActivityProvider())
+    ..registerFactory<StockProvider>(() => StockProvider());
   // ..registerFactory<RegisterProvider>(() => RegisterProvider())
   // ..registerFactory<NotificationsProvider>(() => NotificationsProvider())
   // ..registerFactory<ForgotPasswordProvider>(() => ForgotPasswordProvider())
