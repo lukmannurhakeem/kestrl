@@ -5,4 +5,5 @@ class Routes {
   static const String HISTORY = '/history';
 
   static const String MAIN = '/main';
+  static const String STOCK_DETAIL = '/stockDetail';
 }

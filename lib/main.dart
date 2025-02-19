@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'pages/home_page.dart';
-import 'provider/activity_provider.dart';
 import 'provider/stock_provider.dart';
 import 'routes/router.dart';
 import 'services/locator_service.dart';
@@ -27,9 +26,6 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<ActivityProvider>(
-          create: (context) => locator<ActivityProvider>(),
-        ),
         ChangeNotifierProvider<StockProvider>(
           create: (context) => locator<StockProvider>(),
         )

@@ -1,6 +1,4 @@
 import 'package:get_it/get_it.dart';
-
-import '../provider/activity_provider.dart';
 import '../provider/stock_provider.dart';
 import '../repositories/stock_repository.dart';
 import 'http_service.dart';
@@ -32,7 +30,6 @@ Future<void> initLocator() async {
     //     () => LocalizationService(navigationService: locator()))
 
     /// Page Dependencies
-    ..registerFactory<ActivityProvider>(() => ActivityProvider())
     ..registerFactory<StockProvider>(() => StockProvider());
   // ..registerFactory<RegisterProvider>(() => RegisterProvider())
   // ..registerFactory<NotificationsProvider>(() => NotificationsProvider())
