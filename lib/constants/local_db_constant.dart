@@ -11,4 +11,6 @@ class DBConstant {
   static const String KEY_GOOGLE_DIRECTION_API = 'google_direction_api';
 
   static const String KEY_STOCK_LISTINGS = 'stock_listings';
+  static const String KEY_STOCK_DETAILS = 'stock_details_listings';
+  static const String KEY_WATCHLIST = 'watch_listings';
 }

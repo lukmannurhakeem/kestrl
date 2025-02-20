@@ -62,15 +62,6 @@ class _StockDetailPageState extends State<StockDetailPage> {
       appBar: CommonAppBar(
         context: context,
         title: 'Details',
-        action: <IconButton>[
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.favorite_border,
-              color: ColorConstant.primaryColor,
-            ),
-          ),
-        ],
       ),
       body: Container(
         padding: EdgeInsets.all(16),
@@ -137,6 +128,21 @@ class _StockDetailPageState extends State<StockDetailPage> {
             );
           },
         )),
+      ),
+      bottomNavigationBar: Consumer<StockProvider>(
+        builder: (context, provider, child) {
+          final detail = provider.stockDetails;
+          if (provider.watchList.any((element) =>
+              element.name == detail['Name'] || detail['Name'] == null)) {
+            return SizedBox.shrink();
+          }
+          return CommonButton(
+            title: 'Save to wish list',
+            callBack: () {
+              provider.addToWatchlist(detail['Name']);
+            },
+          );
+        },
       ),
     );
   }

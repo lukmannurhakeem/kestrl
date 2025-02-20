@@ -19,6 +19,9 @@ class _WatchListPageState extends State<WatchListPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<StockProvider>().loadWatchlistFromStorage();
+    });
   }
 
   Widget _buildWatchList(StockProvider provider) {
@@ -38,56 +41,62 @@ class _WatchListPageState extends State<WatchListPage> {
       );
     }
 
-    return ListView.builder(
-      itemCount: provider.watchList.length,
-      itemBuilder: (context, index) {
-        final stock = provider.watchList[index];
-        return Card(
-          color: ColorConstant.white,
-          margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: InkWell(
-            onTap: () {
-              NavigationService.instance.pushNamed(
-                Routes.STOCK_DETAIL,
-                arguments: stock.symbol,
-              );
-            },
-            //list
-            onLongPress: () {
-              provider.removeFromWatchlist(stock.name);
-            },
-            child: ListTile(
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(stock.exchange,
-                      style: context.titleS
-                          ?.copyWith(color: ColorConstant.primaryColor)),
-                  Text(stock.symbol, style: context.titleL),
-                ],
-              ),
-              subtitle: Text(stock.name),
-              trailing: PopupMenuButton(
-                icon: Icon(Icons.more_vert, color: Colors.grey),
-                onSelected: (value) {
-                  if (value == 'remove') {
-                    provider.removeFromWatchlist(stock.name);
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'remove',
-                    child: Text(
-                      'Remove from Watchlist',
-                      style: context.bodyM,
+    return RefreshIndicator(
+      color: ColorConstant.primaryColor,
+      onRefresh: () async {
+        await provider.loadWatchlistFromStorage();
+      },
+      child: ListView.builder(
+        itemCount: provider.watchList.length,
+        itemBuilder: (context, index) {
+          final stock = provider.watchList[index];
+          return Card(
+            color: ColorConstant.white,
+            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: InkWell(
+              onTap: () {
+                NavigationService.instance.pushNamed(
+                  Routes.STOCK_DETAIL,
+                  arguments: stock.symbol,
+                );
+              },
+              //list
+              onLongPress: () {
+                provider.removeFromWatchlist(stock.name);
+              },
+              child: ListTile(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(stock.exchange,
+                        style: context.titleS
+                            ?.copyWith(color: ColorConstant.primaryColor)),
+                    Text(stock.symbol, style: context.titleL),
+                  ],
+                ),
+                subtitle: Text(stock.name),
+                trailing: PopupMenuButton(
+                  icon: Icon(Icons.more_vert, color: Colors.grey),
+                  onSelected: (value) {
+                    if (value == 'remove') {
+                      provider.removeFromWatchlist(stock.name);
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'remove',
+                      child: Text(
+                        'Remove from Watchlist',
+                        style: context.bodyM,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 

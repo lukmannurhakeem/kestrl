@@ -1,4 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import '../constants/constant.dart';
+import '../constants/local_db_constant.dart';
+import '../model/stock_details_model.dart';
 import '../model/stock_listing_model.dart';
 import '../repositories/stock_repository.dart';
 import '../widgets/common_widget.dart';
@@ -72,14 +78,22 @@ class StockProvider extends ChangeNotifier {
 
   Future<void> addToWatchlist(String keyword) async {
     try {
-      _isLoading = true;
-      notifyListeners();
       bool exists = _watchList.any((element) => element.name == keyword);
       if (exists) {
         throw Exception('Stock is already in the watchlist');
       }
-      _watchList.addAll(_stocks.where((element) => element.name == keyword));
-      snackBarSuccess(content: 'Success add from watch list');
+
+      final stocksToAdd =
+          _stocks.where((element) => element.name == keyword).toList();
+      if (stocksToAdd.isEmpty) {
+        throw Exception('Stock not found');
+      }
+
+      _watchList.addAll(stocksToAdd);
+
+      await saveWatchlistToStorage();
+
+      snackBarSuccess(content: 'Successfully added to watchlist');
     } catch (e) {
       snackBarFailed(content: e.toString());
     } finally {
@@ -88,14 +102,53 @@ class StockProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> saveWatchlistToStorage() async {
+    try {
+      final box = Hive.box(ConstantValue.dbName);
+
+      final List<String> jsonStringList =
+          _watchList.map((stock) => json.encode(stock.toJson())).toList();
+
+      await box.put(DBConstant.KEY_WATCHLIST, jsonStringList);
+      print('Saving watchlist to storage');
+    } catch (e) {
+      print('Error saving watchlist to storage: $e');
+      throw Exception('Failed to save watchlist: ${e.toString()}');
+    }
+  }
+
   Future<void> removeFromWatchlist(String keyword) async {
+    try {
+      _watchList.removeWhere((element) => element.name == keyword);
+
+      await saveWatchlistToStorage();
+
+      snackBarSuccess(content: 'Successfully removed from watchlist');
+    } catch (e) {
+      snackBarFailed(content: 'Error: ${e.toString()}');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadWatchlistFromStorage() async {
     try {
       _isLoading = true;
       notifyListeners();
-      _watchList.removeWhere((element) => element.name == keyword);
-      snackBarSuccess(content: 'Success remove from watch list');
+
+      final box = Hive.box(ConstantValue.dbName);
+      final List<dynamic>? storedWatchlist = box.get(DBConstant.KEY_WATCHLIST);
+
+      if (storedWatchlist != null) {
+        _watchList = storedWatchlist.map<StockListingModel>((item) {
+          final Map<String, dynamic> jsonMap = json.decode(item);
+          return StockListingModel.fromJson(jsonMap);
+        }).toList();
+      }
     } catch (e) {
-      snackBarFailed(content: 'Error : ${e.toString()}');
+      print('Error loading watchlist from storage: $e');
+      snackBarFailed(content: 'Error loading watchlist: ${e.toString()}');
     } finally {
       _isLoading = false;
       notifyListeners();
