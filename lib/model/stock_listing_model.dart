@@ -17,6 +17,30 @@ class StockListingModel {
     required this.status,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'symbol': symbol,
+      'name': name,
+      'exchange': exchange,
+      'assetType': assetType,
+      'ipoDate': ipoDate,
+      'delistingDate': delistingDate,
+      'status': status,
+    };
+  }
+
+  factory StockListingModel.fromJson(Map<String, dynamic> json) {
+    return StockListingModel(
+      symbol: json['symbol'] ?? '',
+      name: json['name'] ?? '',
+      exchange: json['exchange'] ?? '',
+      assetType: json['assetType'] ?? '',
+      ipoDate: json['ipoDate'] ?? '',
+      delistingDate: json['delistingDate'] ?? '',
+      status: json['status'] ?? '',
+    );
+  }
+
   factory StockListingModel.fromCsvRow(List<String> row) {
     return StockListingModel(
       symbol: row[0],

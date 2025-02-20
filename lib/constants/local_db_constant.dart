@@ -10,6 +10,5 @@ class DBConstant {
   static const String KEY_LANGUAGE = 'language_locale';
   static const String KEY_GOOGLE_DIRECTION_API = 'google_direction_api';
 
-  static const String KEY_LIST = 'list';
-  static const String KEY_SELECTED_TYPES = 'selected_types';
+  static const String KEY_STOCK_LISTINGS = 'stock_listings';
 }

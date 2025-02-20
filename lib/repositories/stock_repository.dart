@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:hive/hive.dart';
 import '../constants/constant.dart';
 import '../constants/endpoints_constant.dart';
+import '../constants/local_db_constant.dart';
 import '../model/stock_listing_model.dart';
 import '../model/stock_search_result_model.dart';
 import '../model/stock_series_monthly_model.dart';
@@ -24,10 +26,65 @@ class StockRepository {
 
       // response.data is already a String containing CSV data
       final listings = stockListingModelFromCsv(response.data);
+
+      await setStockListings(listings);
+
       return listings;
     } catch (e, st) {
       print(e.toString());
       print(st);
+      return getStoredStockListings() ?? [];
+    }
+  }
+
+  List<StockListingModel>? getStoredStockListings() {
+    try {
+      final List<dynamic>? jsonStringList =
+          Hive.box(ConstantValue.dbName).get(DBConstant.KEY_STOCK_LISTINGS);
+
+      if (jsonStringList == null) return null;
+
+      // Convert JSON strings back to StockListingModel objects
+      return jsonStringList.map<StockListingModel>((jsonString) {
+        final Map<String, dynamic> jsonMap = json.decode(jsonString);
+        return StockListingModel.fromJson(jsonMap);
+      }).toList();
+    } catch (e) {
+      print('Error retrieving stock listings from Hive: ${e.toString()}');
+      return null;
+    }
+  }
+
+  Future<void> setStockListings(List<StockListingModel>? listings) async {
+    try {
+      if (listings == null) {
+        await Hive.box(ConstantValue.dbName)
+            .delete(DBConstant.KEY_STOCK_LISTINGS);
+        return;
+      }
+
+      // Convert the list to JSON strings
+      final List<String> jsonStringList =
+          listings.map((listing) => json.encode(listing.toJson())).toList();
+
+      // Store in Hive
+      await Hive.box(ConstantValue.dbName)
+          .put(DBConstant.KEY_STOCK_LISTINGS, jsonStringList);
+
+      print('Saved ${listings.length} stock listings to Hive');
+    } catch (e, st) {
+      print('Error saving stock listings to Hive: ${e.toString()}');
+      print(st);
+      rethrow;
+    }
+  }
+
+  Future<void> clearStockListings() async {
+    try {
+      await Hive.box(ConstantValue.dbName)
+          .delete(DBConstant.KEY_STOCK_LISTINGS);
+    } catch (e) {
+      print('Error clearing stock listings: ${e.toString()}');
       rethrow;
     }
   }

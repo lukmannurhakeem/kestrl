@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-
+import '../repositories/stock_repository.dart';
 import '../constants/constant.dart';
 import '../widgets/common_widget.dart';
 import 'local_db_service.dart';
@@ -12,6 +12,7 @@ import 'locator_service.dart';
 class APIService {
   Dio dio = Dio();
   static APIService get instance => locator<APIService>();
+  final StockRepository stockRepository = StockRepository();
   String url = stgUrl;
 
   APIService() {
@@ -27,6 +28,26 @@ class APIService {
     dio.interceptors.add(
       InterceptorsWrapper(
         onError: (DioException error, ErrorInterceptorHandler handler) async {
+          if (error.type == DioExceptionType.connectionError) {
+            try {
+              final cachedListings = stockRepository.getStoredStockListings();
+
+              if (cachedListings != null && cachedListings.isNotEmpty) {
+                print('Using cached stock listings due to connection error');
+
+                // Create a success response with cached data
+                final Response response = Response(
+                  requestOptions: error.requestOptions,
+                  data: cachedListings,
+                  statusCode: 200,
+                );
+
+                return handler.resolve(response);
+              }
+            } catch (e) {
+              print('Error retrieving cached data: $e');
+            }
+          }
           snackBarFailed(
               content: CustomException(
                       handleError(error), error.response!.statusCode!)
