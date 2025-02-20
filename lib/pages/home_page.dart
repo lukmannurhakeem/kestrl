@@ -72,6 +72,10 @@ class _HomePageState extends State<HomePage> {
                     arguments: stock.symbol,
                   );
                 },
+                //list
+                onLongPress: () {
+                  provider.addToWatchlist(stock.name);
+                },
                 child: ListTile(
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,6 +87,23 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   subtitle: Text(stock.name),
+                  trailing: PopupMenuButton(
+                    icon: Icon(Icons.more_vert, color: Colors.grey),
+                    onSelected: (value) {
+                      if (value == 'add') {
+                        provider.addToWatchlist(stock.name);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'add',
+                        child: Text(
+                          'Add to Watchlist',
+                          style: context.bodyM,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -90,7 +111,10 @@ class _HomePageState extends State<HomePage> {
         );
       }
       return Center(
-        child: Text('No results found for "${provider.searchQuery}"'),
+        child: Text(
+          'No results found for "${provider.searchQuery}"',
+          style: context.bodyL,
+        ),
       );
     }
 
@@ -108,6 +132,9 @@ class _HomePageState extends State<HomePage> {
                 arguments: result.symbol,
               );
             },
+            onLongPress: () {
+              provider.addToWatchlist(result.name);
+            },
             child: ListTile(
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,6 +148,23 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               subtitle: Text(result.name),
+              trailing: PopupMenuButton(
+                icon: Icon(Icons.more_vert, color: Colors.grey),
+                onSelected: (value) {
+                  if (value == 'add') {
+                    provider.addToWatchlist(result.name);
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'add',
+                    child: Text(
+                      'Add to Watchlist',
+                      style: context.bodyM,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -137,7 +181,9 @@ class _HomePageState extends State<HomePage> {
         hasBackButton: false,
         action: <IconButton>[
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              NavigationService.instance.pushNamed(Routes.WATCH_LIST);
+            },
             icon: const Icon(
               Icons.favorite,
               color: ColorConstant.primaryColor,

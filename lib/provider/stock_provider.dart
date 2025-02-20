@@ -7,6 +7,7 @@ class StockProvider extends ChangeNotifier {
   final _stockRepo = StockRepository.instance;
   List<StockListingModel> _stocks = [];
   List<StockListingModel> _searchResults = [];
+  List<StockListingModel> _watchList = [];
   Map<String, dynamic> _stockDetails = {};
   bool _isLoading = false;
   bool _isSearching = false;
@@ -15,6 +16,7 @@ class StockProvider extends ChangeNotifier {
 
   List<StockListingModel> get stocks => _stocks;
   List<StockListingModel> get searchResults => _searchResults;
+  List<StockListingModel> get watchList => _watchList;
   Map<String, dynamic> get stockDetails => _stockDetails;
   bool get isLoading => _isLoading;
   bool get isSearching => _isSearching;
@@ -68,8 +70,39 @@ class StockProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> addToWatchlist(String keyword) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+      bool exists = _watchList.any((element) => element.name == keyword);
+      if (exists) {
+        throw Exception('Stock is already in the watchlist');
+      }
+      _watchList.addAll(_stocks.where((element) => element.name == keyword));
+      snackBarSuccess(content: 'Success add from watch list');
+    } catch (e) {
+      snackBarFailed(content: e.toString());
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> removeFromWatchlist(String keyword) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+      _watchList.removeWhere((element) => element.name == keyword);
+      snackBarSuccess(content: 'Success remove from watch list');
+    } catch (e) {
+      snackBarFailed(content: 'Error : ${e.toString()}');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> loadStockDetails(String keyword) async {
-    print('Hello');
     try {
       _isLoading = true;
       notifyListeners();
