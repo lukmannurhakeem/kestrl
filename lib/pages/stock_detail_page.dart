@@ -5,6 +5,7 @@ import '../constants/color_constant.dart';
 import '../provider/stock_provider.dart';
 import '../widgets/common_appbar.dart';
 import '../widgets/common_button_widget.dart';
+import '../widgets/common_fl_chart.dart';
 
 class StockDetailPage extends StatefulWidget {
   String details;
@@ -24,6 +25,8 @@ class _StockDetailPageState extends State<StockDetailPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<StockProvider>(context, listen: false)
           .loadStockDetails(widget.details);
+      Provider.of<StockProvider>(context, listen: false)
+          .loadTimeSeriesMonthly(widget.details);
     });
   }
 
@@ -124,6 +127,11 @@ class _StockDetailPageState extends State<StockDetailPage> {
                   style: TextStyle(fontSize: 14),
                 ),
                 SizedBox(height: 16),
+                CommonFlChart(
+                  betweenColor: Colors.white,
+                  line1Color: Colors.amber,
+                  line2Color: Colors.blue,
+                )
               ],
             );
           },
