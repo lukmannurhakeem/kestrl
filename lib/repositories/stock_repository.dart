@@ -113,7 +113,6 @@ class StockRepository {
           'function': 'SYMBOL_SEARCH',
           'keywords': query,
           'apikey': '$apiKey',
-          // 'apikey': '7SVSXP9IBZ4BOB8R',
           'datatype': 'csv'
         },
       );
@@ -141,7 +140,6 @@ class StockRepository {
           'function': 'OVERVIEW',
           'symbol': symbol,
           'apikey': '$apiKey',
-          // 'apikey': '7SVSXP9IBZ4BOB8R',
         },
       );
       if (response.data is Map<String, dynamic> &&
@@ -167,7 +165,6 @@ class StockRepository {
           'function': 'TIME_SERIES_MONTHLY',
           'symbol': symbol,
           'apikey': '$apiKey',
-          // 'apikey': '7SVSXP9IBZ4BOB8R',
         },
       );
 

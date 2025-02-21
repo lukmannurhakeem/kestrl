@@ -4,7 +4,8 @@ import '../services/dialog_services.dart';
 import '../services/navigation_service.dart';
 
 const String stgUrl = 'https://www.alphavantage.co';
-const String apiKey = 'Z6TJZG4HSLUB47J1';
+// ADD YOUR KEY HERE
+const String apiKey = 'Your key';
 
 class ConstantValue {
   static const String dbName = 'localDB';

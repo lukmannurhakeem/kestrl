@@ -177,8 +177,6 @@ class StockProvider extends ChangeNotifier {
 
       await StockRepository.instance.getSeriesMonthly(keyword);
     } catch (e) {
-      snackBarFailed(
-          content: 'Error loading saved activities: ${e.toString()}');
     } finally {
       _isLoading = false;
       notifyListeners();
