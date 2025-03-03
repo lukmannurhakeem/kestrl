@@ -7,8 +7,7 @@ import '../extensions/int_extensions.dart';
 import '../extensions/text_style_extensions.dart';
 import '../services/navigation_service.dart';
 
-Widget reusableDivider({double? height}) =>
-    Divider(height: height ?? 0, thickness: 0.5);
+Widget reusableDivider({double? height}) => Divider(height: height ?? 0, thickness: 0.5);
 
 bool hasMatch(String? s, String p) {
   return (s == null) ? false : RegExp(p).hasMatch(s);
